@@ -1,6 +1,6 @@
 ---
 title: "Assignment 6"
-author: "Charles Lang"
+author: "Yang XU"
 date: "11/16/2016"
 output: html_document
 ---
@@ -21,24 +21,26 @@ library(rpart)
 #Data
 ```{r}
 #Upload the data sets MOOC1.csv and MOOC2.csv
-M1 <- 
-
-M2 <- 
+M1 <- read.csv("~/assignment6-yx2396/MOOC1.csv")
+M2 <- read.csv("~/assignment6-yx2396/MOOC2.csv")
 
 ```
 
 #Decision tree
 ```{r}
 #Using the rpart package generate a classification tree predicting certified from the other variables in the M1 data frame.
+M1$certified_num<-ifelse(M1$certified=="yes", 1, 0)
 
-c.tree1 <- 
+c.tree1 <- rpart(certified_num ~ forum.posts + grade + assignment, data= M1, method = "class", control=rpart.control(minsplit=1, minbucket=1, cp=0.001))
 
 #Check the results from the classifcation tree using the printcp() command
 
+printcp(c.tree1)
 
 
 #Plot your tree
 
+post(c.tree1, file="tree1.ps")
 
 
 ```
@@ -48,7 +50,7 @@ c.tree1 <-
 #If we are worried about overfitting we can remove nodes form our tree using the prune() command, setting cp to the CP value from the table that corresponds to the number of nodes we want the tree to terminate at. Let's set it to two nodes.
 
 ```{r}
-c.tree2 <- prune(c.tree1, cp = 0.047739)
+c.tree2 <- prune(c.tree1, cp = 0.001)
 
 #Visualize this tree and compare it to the one you generated earlier
 
@@ -67,3 +69,12 @@ table(M2$certified, M2$predict1)
 table(M2$certified, M2$predict2)
 
 ```
+```{r}
+#Compare the predicted and the observed
+M2$certified_num <- ifelse(M2$certified == 'TRUE',1,0) 
+C1<-ifelse(M2$certified_num==M2$predict1,1,0)
+C2<-ifelse(M2$certified_num==M2$predict2,1,0)
+sum(C1)/length(C1)
+sum(C2)/length(C2)
+```
+From the table above, the two are appearing to have the same prediction rate, and this result is the same in the comparison below.
